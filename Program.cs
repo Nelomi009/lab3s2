@@ -18,30 +18,28 @@ namespace MatrixCalculator {
 
   // Квадратная матрица
   public class SquareMatrix : IComparable, ICloneable {
-    // Статические поля
-    private static double comparisonTolerance = 1e-12;
-    private static double defaultMinRandomValue = -5.0;
-    private static double defaultMaxRandomValue = 5.0;
+    private static double s_comparisonTolerance = 1e-12;
+    private static double s_defaultMinRandomValue = -5.0;
+    private static double s_defaultMaxRandomValue = 5.0;
 
-    // Приватное поле
-    private double[,] matrixData;
+    private double[,] _matrixData;
 
-    public int Size { get; private set; }
+    public int size { get; private set; }
 
     // Индексатор
     public double this[int rowIndex, int columnIndex] {
       get {
-        return matrixData[rowIndex, columnIndex];
+        return _matrixData[rowIndex, columnIndex];
       }
       set {
-        matrixData[rowIndex, columnIndex] = value;
+        _matrixData[rowIndex, columnIndex] = value;
       }
     }
 
     // Конструкторы
     public SquareMatrix() {
-      Size = 0;
-      matrixData = new double[0, 0];
+      size = 0;  
+      _matrixData = new double[0, 0];
     }
 
     public SquareMatrix(int size) {
@@ -49,13 +47,13 @@ namespace MatrixCalculator {
         throw new MatrixSizeException("Matrix size must be greater than zero.");
       }
 
-      Size = size;
-      matrixData = new double[size, size];
+      this.size = size;
+      _matrixData = new double[size, size];
     }
 
     // Конструктор случайной матрицы с диапазоном по умолчанию
     public SquareMatrix(int size, Random randomGenerator)
-      : this(size, defaultMinRandomValue, defaultMaxRandomValue, randomGenerator) {
+      : this(size, s_defaultMinRandomValue, s_defaultMaxRandomValue, randomGenerator) {
     }
 
     // Конструктор случайной матрицы с заданным диапазоном
@@ -70,7 +68,7 @@ namespace MatrixCalculator {
 
       for (rowIndex = 0; rowIndex < size; ++rowIndex) {
         for (columnIndex = 0; columnIndex < size; ++columnIndex) {
-          matrixData[rowIndex, columnIndex] =
+          _matrixData[rowIndex, columnIndex] =
           minValue + randomGenerator.NextDouble() * (maxValue - minValue);
         }
       }
@@ -89,22 +87,22 @@ namespace MatrixCalculator {
         throw new MatrixSizeException("Matrix must be square.");
       }
 
-      Size = rowCount;
-      matrixData = new double[Size, Size];
-      Array.Copy(sourceArray, matrixData, sourceArray.Length);
+      size = rowCount;
+      _matrixData = new double[size, size];
+      Array.Copy(sourceArray, _matrixData, sourceArray.Length);
     }
 
-    // Свойство Norm
+    // Свойство Norm 
     public double Norm {
       get {
         double sumOfSquares = 0.0;
         int rowIndex = 0;
         int columnIndex = 0;
 
-        for (rowIndex = 0; rowIndex < Size; ++rowIndex) {
-          for (columnIndex = 0; columnIndex < Size; ++columnIndex) {
-            sumOfSquares += matrixData[rowIndex, columnIndex] *
-            matrixData[rowIndex, columnIndex];
+        for (rowIndex = 0; rowIndex < size; ++rowIndex) {
+          for (columnIndex = 0; columnIndex < size; ++columnIndex) {
+            sumOfSquares += _matrixData[rowIndex, columnIndex] *
+            _matrixData[rowIndex, columnIndex];
           }
         }
 
@@ -122,16 +120,16 @@ namespace MatrixCalculator {
         throw new ArgumentNullException(nameof(rightMatrix));
       }
 
-      if (leftMatrix.Size != rightMatrix.Size) {
+      if (leftMatrix.size != rightMatrix.size) {
         throw new MatrixSizeException("Cannot add matrices of different sizes.");
       }
 
-      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.Size);
+      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.size);
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < leftMatrix.Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < leftMatrix.Size; ++columnIndex) {
+      for (rowIndex = 0; rowIndex < leftMatrix.size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < leftMatrix.size; ++columnIndex) {
           resultMatrix[rowIndex, columnIndex] =
           leftMatrix[rowIndex, columnIndex] + rightMatrix[rowIndex, columnIndex];
         }
@@ -149,16 +147,16 @@ namespace MatrixCalculator {
         throw new ArgumentNullException(nameof(rightMatrix));
       }
 
-      if (leftMatrix.Size != rightMatrix.Size) {
+      if (leftMatrix.size != rightMatrix.size) {
         throw new MatrixSizeException("Cannot subtract matrices of different sizes.");
       }
 
-      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.Size);
+      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.size);
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < leftMatrix.Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < leftMatrix.Size; ++columnIndex) {
+      for (rowIndex = 0; rowIndex < leftMatrix.size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < leftMatrix.size; ++columnIndex) {
           resultMatrix[rowIndex, columnIndex] =
               leftMatrix[rowIndex, columnIndex] - rightMatrix[rowIndex, columnIndex];
         }
@@ -173,12 +171,12 @@ namespace MatrixCalculator {
         throw new ArgumentNullException(nameof(leftMatrix));
       }
 
-      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.Size);
+      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.size);
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < leftMatrix.Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < leftMatrix.Size; ++columnIndex) {
+      for (rowIndex = 0; rowIndex < leftMatrix.size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < leftMatrix.size; ++columnIndex) {
           resultMatrix[rowIndex, columnIndex] =
           leftMatrix[rowIndex, columnIndex] + rightValue;
         }
@@ -192,12 +190,12 @@ namespace MatrixCalculator {
         throw new ArgumentNullException(nameof(leftMatrix));
       }
 
-      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.Size);
+      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.size);
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < leftMatrix.Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < leftMatrix.Size; ++columnIndex) {
+      for (rowIndex = 0; rowIndex < leftMatrix.size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < leftMatrix.size; ++columnIndex) {
           resultMatrix[rowIndex, columnIndex] =
           leftMatrix[rowIndex, columnIndex] - rightValue;
         }
@@ -216,12 +214,12 @@ namespace MatrixCalculator {
         throw new ArgumentNullException(nameof(rightMatrix));
       }
 
-      SquareMatrix resultMatrix = new SquareMatrix(rightMatrix.Size);
+      SquareMatrix resultMatrix = new SquareMatrix(rightMatrix.size);
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < rightMatrix.Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < rightMatrix.Size; ++columnIndex) {
+      for (rowIndex = 0; rowIndex < rightMatrix.size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < rightMatrix.size; ++columnIndex) {
           resultMatrix[rowIndex, columnIndex] =
           leftValue - rightMatrix[rowIndex, columnIndex];
         }
@@ -240,11 +238,11 @@ namespace MatrixCalculator {
         throw new ArgumentNullException(nameof(rightMatrix));
       }
 
-      if (leftMatrix.Size != rightMatrix.Size) {
+      if (leftMatrix.size != rightMatrix.size) {
         throw new MatrixSizeException("Cannot multiply matrices of different sizes.");
       }
 
-      int matrixSize = leftMatrix.Size;
+      int matrixSize = leftMatrix.size;
       SquareMatrix resultMatrix = new SquareMatrix(matrixSize);
 
       int rowIndex = 0;
@@ -273,12 +271,12 @@ namespace MatrixCalculator {
         throw new ArgumentNullException(nameof(leftMatrix));
       }
 
-      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.Size);
+      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.size);
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < leftMatrix.Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < leftMatrix.Size; ++columnIndex) {
+      for (rowIndex = 0; rowIndex < leftMatrix.size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < leftMatrix.size; ++columnIndex) {
           resultMatrix[rowIndex, columnIndex] =
               leftMatrix[rowIndex, columnIndex] * rightValue;
         }
@@ -297,16 +295,16 @@ namespace MatrixCalculator {
         throw new ArgumentNullException(nameof(leftMatrix));
       }
 
-      if (Math.Abs(rightValue) < comparisonTolerance) {
+      if (Math.Abs(rightValue) < s_comparisonTolerance) {
         throw new DivideByZeroException("Division of a matrix by zero.");
       }
 
-      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.Size);
+      SquareMatrix resultMatrix = new SquareMatrix(leftMatrix.size);
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < leftMatrix.Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < leftMatrix.Size; ++columnIndex) {
+      for (rowIndex = 0; rowIndex < leftMatrix.size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < leftMatrix.size; ++columnIndex) {
           resultMatrix[rowIndex, columnIndex] =
               leftMatrix[rowIndex, columnIndex] / rightValue;
         }
@@ -325,17 +323,17 @@ namespace MatrixCalculator {
         return false;
       }
 
-      if (leftMatrix.Size != rightMatrix.Size) {
+      if (leftMatrix.size != rightMatrix.size) {
         return false;
       }
 
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < leftMatrix.Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < leftMatrix.Size; ++columnIndex) {
+      for (rowIndex = 0; rowIndex < leftMatrix.size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < leftMatrix.size; ++columnIndex) {
           if (Math.Abs(leftMatrix[rowIndex, columnIndex] -
-                       rightMatrix[rowIndex, columnIndex]) > comparisonTolerance) {
+                       rightMatrix[rowIndex, columnIndex]) > s_comparisonTolerance) {
             return false;
           }
         }
@@ -396,7 +394,7 @@ namespace MatrixCalculator {
 
     // Переопределение GetHashCode
     public override int GetHashCode() {
-      return (int)Norm ^ Size.GetHashCode();
+      return (int)Norm ^ size.GetHashCode();
     }
 
     // IComparable.CompareTo
@@ -427,13 +425,15 @@ namespace MatrixCalculator {
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < Size; ++columnIndex) {
-          resultString += matrixData[rowIndex, columnIndex]
+      int lastRowIndex = size - 1;
+
+      for (rowIndex = 0; rowIndex < size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < size; ++columnIndex) {
+          resultString += _matrixData[rowIndex, columnIndex]
               .ToString("0.###").PadLeft(8);
         }
 
-        if (rowIndex < Size - 1) {
+        if (rowIndex < lastRowIndex) {
           resultString += Environment.NewLine;
         }
       }
@@ -469,9 +469,9 @@ namespace MatrixCalculator {
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < matrix.Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < matrix.Size; ++columnIndex) {
-          if (Math.Abs(matrix[rowIndex, columnIndex]) > comparisonTolerance) {
+      for (rowIndex = 0; rowIndex < matrix.size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < matrix.size; ++columnIndex) {
+          if (Math.Abs(matrix[rowIndex, columnIndex]) > s_comparisonTolerance) {
             return true;
           }
         }
@@ -488,9 +488,9 @@ namespace MatrixCalculator {
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < matrix.Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < matrix.Size; ++columnIndex) {
-          if (Math.Abs(matrix[rowIndex, columnIndex]) > comparisonTolerance) {
+      for (rowIndex = 0; rowIndex < matrix.size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < matrix.size; ++columnIndex) {
+          if (Math.Abs(matrix[rowIndex, columnIndex]) > s_comparisonTolerance) {
             return false;
           }
         }
@@ -501,13 +501,13 @@ namespace MatrixCalculator {
 
     // ICloneable
     public object Clone() {
-      SquareMatrix resultMatrix = new SquareMatrix(Size);
+      SquareMatrix resultMatrix = new SquareMatrix(size);
 
       int rowIndex = 0;
       int columnIndex = 0;
 
-      for (rowIndex = 0; rowIndex < Size; ++rowIndex) {
-        for (columnIndex = 0; columnIndex < Size; ++columnIndex) {
+      for (rowIndex = 0; rowIndex < size; ++rowIndex) {
+        for (columnIndex = 0; columnIndex < size; ++columnIndex) {
           resultMatrix[rowIndex, columnIndex] = this[rowIndex, columnIndex];
         }
       }
@@ -536,7 +536,6 @@ namespace MatrixCalculator {
 
         Random randomGenerator = new Random();
 
-        // Объявляем числа через переменные, чтобы не было магических чисел
         double minRandomValue = -5.0;
         double maxRandomValue = 5.0;
         double valueForAddition = 1.0;
@@ -598,7 +597,7 @@ namespace MatrixCalculator {
         Console.WriteLine(copyMatrix.ToString());
 
         if (matrixSize > 0) {
-          // Изменяем копию тестовым значением, чтобы показать, что это глубокое копирование
+          // Изменяем копию тестовым значением, чтобы показать глубокое копирование
           copyMatrix[0, 0] = testValueForDeepCopy;
         }
 
